@@ -23,7 +23,6 @@ tag_index_dict_train = {}
 word_index_dict_test = {}
 tag_index_dict_test = {}
 word_index_dict_comp = {}
-list_of_features = []
 Chu_Liu_list_train = []
 Chu_Liu_list_test = []
 Chu_Liu_list_comp = []
@@ -232,69 +231,87 @@ print("Number of word in the Competiton Corpus: ", len(word_in_comp))
 
 def Unigram (p, c):
     res = []
-    num_word_tag_parent_features = len(word_in_train) * len(tag_in_train)
-    num_word_parent_features = len(word_in_train)
-    num_tag_parent_features = len(tag_in_train)
-    num_word_tag_child_features = len(word_in_train) * len(tag_in_train)
-    num_word_child_features = len(word_in_train)
-    num_tag_child_features = len(tag_in_train)
+    num_word_p_tag_p_features = len(word_in_train) * len(tag_in_train)
+    num_word_p_features = len(word_in_train)
+    num_tag_p_features = len(tag_in_train)
+    num_word_c_tag_c_features = len(word_in_train) * len(tag_in_train)
+    num_word_c_features = len(word_in_train)
+    num_tag_c_features = len(tag_in_train)
     start = 0
 
 #Feature word/tag(parent)
     try:
-        word_index = word_index_dict_train[p[1]]
-        tag_index = tag_index_dict_train[p[2]]
-        res.append(start + word_index * len(word_index_dict_train) + tag_index)
+        word_index_p = word_index_dict_train[p[1]]
+        tag_index_p = tag_index_dict_train[p[2]]
+        res.append(start + word_index_p * len(tag_in_train) + tag_index_p)
     except KeyError:
         pass
+    start += num_word_p_tag_p_features
 
-    start += num_word_tag_parent_features
+    if not all(i <= start for i in res):
+        print("There is a problem in feature 1")
+
 # Feature word(parent)
     try:
-        word_index = word_index_dict_train[p[1]]
-        res.append(start + word_index)
+        word_index_p = word_index_dict_train[p[1]]
+        res.append(start + word_index_p)
     except KeyError:
         pass
-    start += num_word_parent_features
+    start += num_word_p_features
+
+    if not all(i <= start for i in res):
+        print("There is a problem in feature 2")
 
 # Feature tag(parent)
     try:
-        tag_index = tag_index_dict_train[p[2]]
-        res.append(start + tag_index)
+        tag_index_p = tag_index_dict_train[p[2]]
+        res.append(start + tag_index_p)
     except KeyError:
         pass
-    start += num_tag_parent_features
+    start += num_tag_p_features
+
+    if not all(i <= start for i in res):
+        print("There is a problem in feature 3")
 
 # Feature word/tag(child)
     try:
-        word_index = word_index_dict_train[c[1]]
-        tag_index = tag_index_dict_train[c[2]]
-        res.append(start + word_index * len(word_index_dict_train) + tag_index)
+        word_index_c = word_index_dict_train[c[1]]
+        tag_index_c = tag_index_dict_train[c[2]]
+        res.append(start + word_index_c * len(tag_in_train) + tag_index_c)
     except KeyError:
         pass
-    start += num_word_tag_child_features
+    start += num_word_c_tag_c_features
+
+    if not all(i <= start for i in res):
+        print("There is a problem in feature 4")
 
 # Feature word(child)
     try:
-        word_index = word_index_dict_train[c[1]]
-        res.append(start + word_index)
+        word_index_c = word_index_dict_train[c[1]]
+        res.append(start + word_index_c)
     except KeyError:
         pass
-    start += num_word_child_features
+    start += num_word_c_features
+
+    if not all(i <= start for i in res):
+        print("There is a problem in feature 5")
 
 # Feature tag(child)
     try:
-        tag_index = tag_index_dict_train[c[2]]
-        res.append(start + tag_index)
+        tag_index_c = tag_index_dict_train[c[2]]
+        res.append(start + tag_index_c)
     except KeyError:
         pass
-    start += num_tag_child_features
+    start += num_tag_c_features
+
+    if not all(i <= start for i in res):
+        print("There is a problem in feature 6")
 
     return res, start
 
 def Biagram_Model_1 (p, c, start):
     res = set()
-    num_tag_p_word_c_tag_c_features = len(word_in_train) * len(tag_in_train) * len(tag_in_train)
+    num_tag_p_word_c_tag_c_features = len(tag_in_train) * len(word_in_train) * len(tag_in_train)
     num_word_p_tag_p_tag_c_features = len(word_in_train) * len(tag_in_train) * len(tag_in_train)
     num_tag_p_tag_c_features = len(tag_in_train) * len(tag_in_train)
 
@@ -308,6 +325,9 @@ def Biagram_Model_1 (p, c, start):
         pass
     start += num_tag_p_word_c_tag_c_features
 
+    if not all(i <= start for i in list(res)):
+        print("There is a problem in feature 8")
+
     #word_p_tag_p_tag_c_features
     try:
         word_index_parent = word_index_dict_train[p[1]]
@@ -319,6 +339,9 @@ def Biagram_Model_1 (p, c, start):
 
     start += num_word_p_tag_p_tag_c_features
 
+    if not all(i <= start for i in list(res)):
+        print("There is a problem in feature 10")
+
     #num_tag_p_tag_c_features
     try:
         tag_index_parent = tag_index_dict_train[p[2]]
@@ -326,8 +349,11 @@ def Biagram_Model_1 (p, c, start):
         res.add(start + tag_index_parent * len(tag_index_dict_train) + tag_index_child)
     except KeyError:
         pass
-
     start += num_tag_p_tag_c_features
+
+    if not all(i <= start for i in list(res)):
+        print("There is a problem in feature 13")
+
     return list(res), start
 
 def Feature7 (p, c, start):
@@ -394,21 +420,63 @@ def Feature13 (p, c, start):
 
 def Features_Model_1 (p, c):
 
-    list_of_features.append(Unigram(p, c)[0] + (Biagram_Model_1(p, c, Unigram(p, c)[1]))[0])
+    list_of_features = []
+    list_of_features.extend(Unigram(p, c)[0])
+    list_of_features.extend((Biagram_Model_1(p, c, Unigram(p, c)[1]))[0])
 
     return list_of_features
 
 num_of_features_model_1 = len(word_in_train) * len(tag_in_train) + len(word_in_train) + len(tag_in_train) + len(word_in_train) * len(tag_in_train) + len(word_in_train) + len(tag_in_train) + len(word_in_train) * len(tag_in_train) * len(tag_in_train) + len(word_in_train) * len(tag_in_train) * len(tag_in_train) +len(tag_in_train) * len(tag_in_train)
 w = np.random.rand(num_of_features_model_1)
 
-
 def score(p, c):
+    global w
     f = []
     f.extend(Unigram(p, c)[0])
     f.extend((Biagram_Model_1(p, c, Unigram(p, c)[1]))[0])
     score = np.sum(w[f])
-
     return score
 
+#return the the dictionary with number of display of each feature key:feature, value: count
 
-print("The end")
+def F_function_for_a_tree (sentence):
+    features_dict = {}
+    for key, tuples in sentence.items():
+        for current_tuple in tuples:
+            Feat_list = (Features_Model_1(key, current_tuple))
+            for feature in Feat_list:
+                if feature not in features_dict.keys():
+                    features_dict[feature] = 0
+                features_dict[feature] += 1
+
+    return features_dict
+
+
+features_list_train = []
+for index, sentence in enumerate(sentences_in_train):
+    features_dict_train = {}
+    for key, tuples in sentence.items():
+        for current_tuple in tuples:
+            Feat_list = (Features_Model_1(key, current_tuple))
+            for feature in Feat_list:
+                if feature not in features_dict_train.keys():
+                    features_dict_train[feature] = 0
+                features_dict_train[feature] += 1
+    features_list_train.append(features_dict_train)
+
+
+def new_w(real_tree, training_tree):
+    global w
+    for key_real in real_tree:
+        w[key_real] += real_tree[key_real]
+
+    for key_training in training_tree:
+        w[key_training] -= training_tree[key_training]
+    return w
+
+print("End")
+
+
+
+
+
