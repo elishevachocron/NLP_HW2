@@ -26,6 +26,8 @@ word_index_dict_comp = {}
 Chu_Liu_list_train = []
 Chu_Liu_list_test = []
 Chu_Liu_list_comp = []
+child_list_train = []
+child_list_test = []
 ROOT = ('0', 'ROOT', '*')
 
 '''---Choosing MODEL 1---'''
@@ -86,6 +88,7 @@ for index, sentence in enumerate(train_sentences):
     word_number = 0
     Chu_Liu_dict_train = {}
     Chu_Liu_dict_train[ROOT] = []
+    child_dict = {}
 
     for word in sentence:
         word = sentence[word_number].split('\t')
@@ -102,6 +105,7 @@ for index, sentence in enumerate(train_sentences):
     for word in sentence:
         word = sentence[word_number].split('\t')
         word_dict[help_dict[int(word[6])]].append((word[0], word[1], word[3]))
+        child_dict[(word[0], word[1], word[3])] = help_dict[int(word[6])]
         word_number += 1
         word_number_chu = 0
         #Building the Chu_Liu dictionary
@@ -113,7 +117,7 @@ for index, sentence in enumerate(train_sentences):
 
     sentences_in_train.append(word_dict)
     Chu_Liu_list_train.append(Chu_Liu_dict_train)
-
+    child_list_train.append(child_dict)
 #Removing all duplicate items + creation of index dictionaries ord and tag index
 
 index = 0
@@ -144,6 +148,7 @@ for index, sentence in enumerate(test_sentences):
     word_number = 0
     Chu_Liu_dict_test = {}
     Chu_Liu_dict_test[ROOT] = []
+    child_dict_test = {}
 
     for word in sentence:
         word = sentence[word_number].split('\t')
@@ -160,6 +165,7 @@ for index, sentence in enumerate(test_sentences):
     for word in sentence:
         word = sentence[word_number].split('\t')
         word_dict[help_dict[int(word[6])]].append((word[0], word[1], word[3]))
+        child_dict_test[(word[0], word[1], word[3])] = help_dict[int(word[6])]
         word_number += 1
         word_number_chu = 0
         # Building the Chu_Liu dictionary
@@ -171,7 +177,7 @@ for index, sentence in enumerate(test_sentences):
 
     sentences_in_test.append(word_dict)
     Chu_Liu_list_test.append(Chu_Liu_dict_test)
-
+    child_list_test.append(child_dict_test)
 #Remove duplicates in test
 
 index = 0
@@ -468,13 +474,12 @@ for index, sentence in enumerate(sentences_in_train):
 def new_w(real_tree, training_tree):
     global w
     for key_real in real_tree:
-        w[key_real] += real_tree[key_real]
+        w[key_real] +=  real_tree[key_real]
 
     for key_training in training_tree:
         w[key_training] -= training_tree[key_training]
     return w
 
-print("End")
 
 
 
